@@ -1,0 +1,301 @@
+html, body {
+  height: 100%;  /* Ensures that body takes the full height of the page */
+  margin: 0;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+} 
+  
+  /* Login and Signup style */
+  .logo-container {
+    max-width: 400px;
+    margin: 50px auto; /* Center the form horizontally and add top margin */
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .logo-container h1 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .logo-container input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  
+  .logo-container button {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #2ecc71;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .logo-container button:hover {
+    background-color: #27ae60;
+  }
+  
+  
+
+  .main-content {
+    flex: 1; /* Allows this section to grow and take up remaining space */
+    
+  }
+  
+  /* Footer style */
+.footer {
+  background-color: #2c3e50; /* Dark background */
+  color: white; /* White text */
+  padding: 20px 0; /* Padding inside the footer */
+  text-align: center; /* Center content */
+  border-top: 4px solid #f39c12; /* Gold top border */
+  width: 100%; /* Full width */
+}
+
+/* Footer content styling */
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 14px;
+}
+
+  /* home page */
+
+/* Table styling */
+table {
+  border-collapse: collapse;
+  width: 80%;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  margin-left: 150px;
+}
+
+td, th {
+  padding: 12px 15px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+td:first-child,
+td:last-child {
+  font-weight: bold;
+}
+
+/* Link and Button styling */
+router-link, a {
+  color: #3498db;
+  text-decoration: none;
+  padding: 20px;
+}
+
+router-link:hover {
+  text-decoration: underline;
+}
+
+button {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #219150;
+}
+
+
+/* add restaurant page */
+
+.addRestaurant {
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  padding: 70px;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  max-width: 600px;
+  margin: 40px auto;  /* Reduced from 200px to 40px */
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  transition: transform 0.3s ease;
+}
+
+.addRestaurant:hover {
+  transform: translateY(-2px);
+}
+
+/* Input Styling */
+.addRestaurant input {
+  padding: 14px 16px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  background-color: #fdfdfd;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.addRestaurant input:focus {
+  border-color: #2ecc71;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+}
+
+/* Button Styling */
+.addRestaurant button {
+  padding: 14px;
+  background: linear-gradient(to right, #27ae60, #2ecc71);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+
+.addRestaurant button:hover {
+  background: linear-gradient(to right, #219150, #27ae60);
+  box-shadow: 0 6px 18px rgba(39, 174, 96, 0.45);
+}
+
+.welcome-text {
+  text-align: center;
+  font-size: 2rem;
+  margin: 200px 0 2rem;  /* Added top margin */
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* CTA Section */
+.cta-section {
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 80px 20px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  margin: 0;
+  position: relative;
+  width: 100%;
+}
+
+.cta-section h2 {
+  font-size: 36px;
+  margin-bottom: 25px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: fadeIn 1s ease-out;
+}
+
+.cta-section p {
+  font-size: 20px;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  animation: fadeIn 1s ease-out 0.5s;
+}
+
+.cta-section button {
+  padding: 18px 50px;
+  font-size: 22px;
+  background: linear-gradient(135deg, #6e7c7c, #2c3e50);
+  color: white;
+  border: none;
+  border-radius: 30px; /* More rounded button */
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.cta-section button:hover {
+  transform: translateY(-7px); /* Button lifts up on hover */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #2c3e50, #6e7c7c);
+}
+
+.cta-section button:focus {
+  outline: none;
+  box-shadow: 0 0 10px #2ecc71; /* Focus effect with a glowing green border */
+}
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
