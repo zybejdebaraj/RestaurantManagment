@@ -1,19 +1,34 @@
 <template>
-  <div class="nav-bar">
+  <nav class="nav-bar" :class="{ scrolled: isScrolled }">
     <router-link to="/" class="logo-wrapper">
-      <img class="logo" src="/images/resto-logo.jpg" alt="Restaurant Logo" />
+      <img class="logo" src="/images/resto-logo.jpg" alt="Resto Logo" />
     </router-link>
     <div class="nav-links">
       <router-link to="/" class="nav-link">Home</router-link>
-      <router-link to="/view-restaurants-menus" class="nav-link">Restaurants & Menus</router-link>
+      <router-link to="/view-restaurants-menus" class="nav-link">Restaurants</router-link>
+      <router-link to="/login" class="nav-link">Login</router-link>
       <router-link to="/sign-up" class="btn btn-primary">Get Started</router-link>
     </div>
-  </div>
+  </nav>
 </template>
 
 <script>
 export default {
-  name: 'AuthNavbar'
+  name: 'AuthNavbar',
+  data() {
+    return { isScrolled: false }
+  },
+  mounted() {
+    window.addEventListener('scroll', this.onScroll)
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.onScroll)
+  },
+  methods: {
+    onScroll() {
+      this.isScrolled = window.scrollY > 60
+    }
+  }
 }
 </script>
 
@@ -22,95 +37,100 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2rem 3rem;
+  padding: 1.2rem 3rem;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 100;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 60%, rgba(0,0,0,0));
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: transparent;
+  transition: background 0.35s ease, box-shadow 0.35s ease, padding 0.35s ease;
+  box-sizing: border-box;
+}
+
+.nav-bar.scrolled {
+  background: rgba(15, 15, 26, 0.96);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+  padding: 0.8rem 3rem;
 }
 
 .logo-wrapper {
   display: block;
-  padding: 0;
+  flex-shrink: 0;
 }
 
 .logo {
-  height: 90px;
+  height: 70px;
   width: auto;
   object-fit: contain;
   filter: brightness(1.2);
+  transition: height 0.3s;
+}
+
+.nav-bar.scrolled .logo {
+  height: 55px;
 }
 
 .nav-links {
   display: flex;
-  gap: 0.5rem;
   align-items: center;
+  gap: 0.4rem;
 }
 
 .nav-link {
   text-decoration: none;
-  color: white;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.97rem;
   font-weight: 600;
-  font-size: 1.6rem;
-  padding: 0.5rem 1.2rem;
-  border-radius: 20px;
-  letter-spacing: 0.03em;
-  transition: 
-    color 0.3s,
-    background 0.3s,
-    box-shadow 0.3s;
-  position: relative;
+  padding: 0.5rem 1.1rem;
+  border-radius: 50px;
+  letter-spacing: 0.02em;
+  transition: color 0.2s, background 0.2s;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.router-link-exact-active {
   color: #ff6b6b;
-  background: rgba(255,255,255,0.08);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  text-decoration: none;
+  background: rgba(255,255,255,0.07);
 }
 
-.nav-link:active {
-  background: rgba(255,255,255,0.15);
-}
-
- .btn-primary {
-  background-color: #ff6b6b;
-  color: white;
-  padding: 0.5rem 1.5rem;
-  margin-right: 5rem;
-  border-radius: 30px;
+.btn-primary {
+  background: #ff6b6b;
+  color: #fff;
+  padding: 0.55rem 1.5rem;
+  border-radius: 50px;
   text-decoration: none;
-  transition: all 0.3s ease;
-  border: none;
-  font-size: 1.6rem;
+  font-size: 0.97rem;
   font-weight: 700;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  outline: 2px solid #fff2;
+  margin-left: 0.6rem;
+  box-shadow: 0 3px 14px rgba(255,107,107,0.35);
+  transition: all 0.25s ease;
+  border: none;
 }
 
 .btn-primary:hover {
-  background-color: #ff5252;
-  color: #fff;
+  background: #e85555;
   transform: translateY(-2px);
-  outline: 2px solid #fff5;
-} 
+  box-shadow: 0 6px 20px rgba(255,107,107,0.45);
+}
 
 @media (max-width: 768px) {
   .nav-bar {
-    padding: 1rem;
+    padding: 1rem 1.2rem;
   }
-  
-  .nav-links {
-    gap: 1rem;
+
+  .nav-bar.scrolled {
+    padding: 0.7rem 1.2rem;
   }
-  
+
   .nav-link {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .logo {
+    height: 52px;
   }
 }
 </style>
-
-
