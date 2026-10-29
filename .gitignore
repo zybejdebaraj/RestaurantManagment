@@ -8,6 +8,10 @@ dist/
 .env.*.local
 .env
 
+# Backend secrets (keep the blank setup template)
+/backend/.env*
+!/backend/.env.example
+
 # Log files
 npm-debug.log*
 yarn-debug.log*
