@@ -11,17 +11,20 @@
 <script>
 import AppIcon from './AppIcon.vue';
 export default {
-  components: { AppIcon }, props: { modelValue: { type: String, default: '' } }, emits: ['update:modelValue'], data: () => ({ error: '' }),
+  components: { AppIcon }, props: { modelValue: { type: String, default: '' } }, emits: ['update:modelValue'], data: () => ({ error: '', readRequest: 0 }),
+  watch: { modelValue() { this.readRequest++; } },
+  beforeUnmount() { this.readRequest++; },
   methods: {
     pick(file) {
       if (!file) return;
+      const request = ++this.readRequest;
       if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type) || file.size > 5 * 1024 * 1024) { this.error = 'Choose a supported image up to 5 MB.'; return; }
       this.error = ''; const reader = new FileReader();
-      reader.onload = () => this.$emit('update:modelValue', reader.result);
-      reader.onerror = () => { this.error = 'We couldn’t read that image. Please choose another.'; };
+      reader.onload = () => { if (request === this.readRequest) this.$emit('update:modelValue', reader.result); };
+      reader.onerror = () => { if (request === this.readRequest) this.error = 'We couldn’t read that image. Please choose another.'; };
       reader.readAsDataURL(file);
     },
-    remove() { this.$emit('update:modelValue', ''); this.error = ''; },
+    remove() { this.readRequest++; this.$emit('update:modelValue', ''); this.error = ''; },
   },
 };
 </script>

@@ -76,3 +76,19 @@ test('schema failures propagate so startup cannot silently accept a broken datab
   const failure = new Error('Schema application failed');
   await assert.rejects(ensureSchema({ query: async () => { throw failure; } }), error => error === failure);
 });
+
+test('idle database connection failures are handled without crashing or exposing credentials', t => {
+  const { directory } = fixture(t);
+  const result = spawnSync(process.execPath, ['-e', `
+    const assert = require('node:assert/strict');
+    const { createDatabase } = require(process.argv[1]);
+    const pool = createDatabase();
+    const messages = [];
+    console.error = (...parts) => messages.push(parts.join(' '));
+    assert.doesNotThrow(() => pool.emit('error', Object.assign(new Error('sensitive connection detail'), { code: '57P01' })));
+    assert(messages.some(message => message.includes('57P01')));
+    assert(messages.every(message => !message.includes('sensitive connection detail')));
+    pool.end();
+  `, path.join(__dirname, '../src/config/db.js')], { cwd: directory, env: { ...process.env, JWT_SECRET: 'pool-test-secret' }, encoding: 'utf8', timeout: 10000 });
+  assert.equal(result.status, 0, result.stderr);
+});

@@ -10,7 +10,9 @@ http.interceptors.request.use((config) => {
   return config;
 });
 http.interceptors.response.use((response) => response, (error) => {
-  if (error.response?.status === 401 && error.config?.url !== '/auth/login' && localStorage.getItem('restaurant-token')) {
+  const token = localStorage.getItem('restaurant-token');
+  if (error.response?.status === 401 && error.config?.url !== '/auth/login' && token
+    && error.config?.headers?.Authorization === `Bearer ${token}`) {
     localStorage.removeItem('restaurant-token');
     localStorage.removeItem('user-info');
     window.dispatchEvent(new Event('restaurant-session-expired'));

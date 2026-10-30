@@ -81,7 +81,7 @@ function createOrderController({ db }) {
 
   async function updateStatus(req, res, next) {
     try {
-      if (!Object.hasOwn(transitions, req.body.status)) throw new RequestError(400, 'Invalid order status');
+      if (typeof req.body.status !== 'string' || !Object.hasOwn(transitions, req.body.status)) throw new RequestError(400, 'Invalid order status');
       const order = await transaction(db, async client => {
         const existing = await lockOrder(client, req.params.id, req.user.id);
         if (!transitions[existing.status].includes(req.body.status)) throw new RequestError(409, 'This order status change is not allowed');

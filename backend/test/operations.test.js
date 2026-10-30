@@ -161,6 +161,12 @@ test('PostgreSQL order and table management', async t => {
     assert.equal((await request(0, 'GET', `/tables?restaurant_id=${restaurantId}`)).find(item => item.id === created.id).status, 'available');
     await order(created.id);
   });
+  await t.test('malformed status values return client errors without changing the order', async () => {
+    const placed = await order();
+    for (const value of [{ toString: null }, ['preparing'], null, 1, true, {}]) await status(placed.id, value, 400);
+    const unchanged = (await request(0, 'GET', `/orders?restaurant_id=${restaurantId}`)).find(item => item.id === placed.id);
+    assert.equal(unchanged.status, 'pending');
+  });
   await t.test('cancellation releases tables and preserves order history', async () => {
     const created = await table(); const placed = await order(created.id);
     await status(placed.id, 'cancelled');

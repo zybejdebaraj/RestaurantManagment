@@ -30,7 +30,7 @@ async function componentState(name) {
     }
     pending.get(`get /tables?${restaurant}`).resolve({ data: data.tables || [] });
   }
-  return { state, pending, calls, resolve };
+  return { state, pending, calls, resolve, component };
 }
 
 test('order previews use cents, preserve free items, and multiply quantities', async () => {
@@ -45,6 +45,24 @@ test('order previews use cents, preserve free items, and multiply quantities', a
 });
 
 for (const name of ['Tables', 'Orders']) {
+  test(`${name}: refresh recovers when the initial restaurant request fails`, async () => {
+    const { state, component, pending, resolve } = await componentState(name);
+    state.restaurantId = '';
+    const initial = component.mounted.call(state);
+    pending.get('get /restaurant?mine=1').reject(new Error('Temporary network failure'));
+    await initial;
+    assert.equal(state.initializing, false);
+    assert.match(state.error, /load your restaurants/);
+    // This is the handler used by the page's refresh and retry buttons.
+    const retry = state.refresh();
+    pending.get('get /restaurant?mine=1').resolve({ data: [{ id: 2, name: 'Recovered restaurant' }] });
+    await new Promise(setImmediate);
+    resolve('2', { tables: [{ id: 20, status: 'available' }] });
+    await retry;
+    assert.equal(state.restaurantId, '2');
+    assert.equal(state.tables[0].id, 20);
+    assert.equal(state.error, '');
+  });
   test(`${name}: slow responses cannot replace another restaurant’s data`, async () => {
     const { state, resolve } = await componentState(name);
     const load = name === 'Tables' ? state.loadTables : state.loadOrders;

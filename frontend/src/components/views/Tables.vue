@@ -1,7 +1,7 @@
 <template>
   <ManagementLayout>
-    <div class="page-heading"><div><p class="eyebrow">MAKE ROOM FOR YOUR GUESTS</p><h1>Tables</h1><p>Arrange your floor and see which tables are ready for service.</p></div><button class="button secondary" :disabled="loading || busy" @click="loadTables">Refresh availability</button></div>
-    <p v-if="error" class="notice error" role="alert">{{ error }}</p>
+    <div class="page-heading"><div><p class="eyebrow">MAKE ROOM FOR YOUR GUESTS</p><h1>Tables</h1><p>Arrange your floor and see which tables are ready for service.</p></div><button class="button secondary" :disabled="loading || busy || initializing" @click="refresh">Refresh availability</button></div>
+    <p v-if="error" class="notice error" role="alert">{{ error }} <button class="text-button" :disabled="loading || busy || initializing" @click="refresh">Try again</button></p>
     <p v-if="message" class="notice" role="status">{{ message }}</p>
     <label class="field operations-restaurant">Restaurant<select v-model="restaurantId" :disabled="busy || initializing" @change="changeRestaurant"><option v-for="restaurant in restaurants" :key="restaurant.id" :value="String(restaurant.id)">{{ restaurant.name }}</option></select></label>
     <p v-if="initializing" class="loading-state">Loading your restaurants…</p>
@@ -18,8 +18,8 @@
       <section class="panel">
         <div class="table-toolbar"><div><h2>Your floor <span class="count-badge">{{ tables.length }}</span></h2><p>{{ available }} available · {{ tables.length - available }} occupied</p></div></div>
         <p v-if="loading" class="loading-state">Loading tables…</p>
-        <div v-else-if="!tables.length" class="empty-state"><h2>A fresh floor plan.</h2><p>Add your first table using the form.</p></div>
-        <div v-else class="floor-grid">
+        <div v-else-if="!error && !tables.length" class="empty-state"><h2>A fresh floor plan.</h2><p>Add your first table using the form.</p></div>
+        <div v-else-if="tables.length" class="floor-grid">
           <article v-for="table in tables" :key="table.id" class="floor-table" :class="{ occupied: table.status === 'occupied' }">
             <div class="order-card-heading"><span class="icon-tile"><AppIcon name="table" /></span><span class="pill" :class="{ neutral: table.status === 'occupied' }">{{ table.status }}</span></div>
             <h3>{{ table.name }}</h3><p>{{ table.capacity }} {{ table.capacity === 1 ? 'seat' : 'seats' }}</p>
@@ -44,16 +44,23 @@ export default {
   components: { ManagementLayout, ConfirmDialog, AppIcon },
   data: () => ({ restaurants: [], restaurantId: '', tables: [], initializing: true, loading: false, busy: false, error: '', message: '', editing: null, target: null, form: { name: '', capacity: 2 }, loadId: 0 }),
   computed: { available() { return this.tables.filter(table => table.status === 'available').length; } },
-  async mounted() {
-    try {
-      this.restaurants = (await http.get('/restaurant?mine=1')).data;
-      this.restaurantId = String(this.restaurants.find(restaurant => String(restaurant.id) === this.$route.query.restaurant)?.id || this.restaurants[0]?.id || '');
-      await this.loadTables();
-    } catch (error) { this.error = error.response?.data?.error || 'We couldn’t load your restaurants.'; }
-    finally { this.initializing = false; }
-  },
+  async mounted() { await this.initialize(); },
   beforeUnmount() { this.loadId++; },
   methods: {
+    async initialize() {
+      this.initializing = true; this.error = "";
+      try {
+        this.restaurants = (await http.get('/restaurant?mine=1')).data;
+        this.restaurantId = String(this.restaurants.find(restaurant => String(restaurant.id) === this.$route.query.restaurant)?.id || this.restaurants[0]?.id || '');
+        await this.loadTables();
+      } catch (error) { this.error = error.response?.data?.error || 'We couldn’t load your restaurants.'; }
+      finally { this.initializing = false; }
+    },
+    async refresh() {
+      if (this.busy || this.loading || this.initializing) return;
+      if (!this.restaurantId) await this.initialize();
+      else await this.loadTables();
+    },
     reset() { this.editing = null; this.form = { name: '', capacity: 2 }; },
     changeRestaurant() { this.reset(); this.target = null; this.message = ''; this.tables = []; this.loadTables(); },
     edit(table) { this.editing = table.id; this.form = { name: table.name, capacity: table.capacity }; this.message = ''; },

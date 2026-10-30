@@ -1,7 +1,7 @@
 <template>
   <ManagementLayout>
-    <div class="page-heading"><div><p class="eyebrow">FROM FIRST BITE TO LAST</p><h1>Orders</h1><p>Take an order, follow its progress, and keep service moving.</p></div><button class="button secondary" :disabled="loading || busy" @click="loadOrders">Refresh orders</button></div>
-    <p v-if="error" class="notice error" role="alert">{{ error }}</p><p v-if="message" class="notice" role="status">{{ message }}</p>
+    <div class="page-heading"><div><p class="eyebrow">FROM FIRST BITE TO LAST</p><h1>Orders</h1><p>Take an order, follow its progress, and keep service moving.</p></div><button class="button secondary" :disabled="loading || busy || initializing" @click="refresh">Refresh orders</button></div>
+    <p v-if="error" class="notice error" role="alert">{{ error }} <button class="text-button" :disabled="loading || busy || initializing" @click="refresh">Try again</button></p><p v-if="message" class="notice" role="status">{{ message }}</p>
     <label class="field operations-restaurant">Restaurant<select v-model="restaurantId" :disabled="busy || initializing" @change="changeRestaurant"><option v-for="restaurant in restaurants" :key="restaurant.id" :value="String(restaurant.id)">{{ restaurant.name }}</option></select></label>
     <p v-if="initializing" class="loading-state">Loading your restaurants…</p>
     <div v-else-if="!restaurants.length && !error" class="panel empty-state"><h2>Start with a restaurant.</h2><p>Add a restaurant and menu items to start taking orders.</p><router-link to="/add" class="button primary">Add restaurant</router-link></div>
@@ -26,8 +26,8 @@
       <section class="panel">
         <div class="table-toolbar"><div><h2>Service board <span class="count-badge">{{ orders.filter(active).length }}</span></h2><p>{{ orders.filter(active).length }} active orders · {{ money(orders.filter(active).reduce((total, order) => total + order.total, 0)) }} in progress</p></div><div class="toolbar-filters"><select v-model="filter" aria-label="Filter orders"><option value="active">Active orders</option><option value="history">Order history</option><option value="all">All orders</option></select></div></div>
         <p v-if="loading" class="loading-state">Loading orders…</p>
-        <div v-else-if="!visibleOrders.length" class="empty-state"><h2>{{ filter === 'history' ? 'No past orders yet.' : 'Ready for the next order.' }}</h2><p>{{ filter === 'history' ? 'Completed and cancelled orders appear here.' : 'Create an order using the form.' }}</p></div>
-        <div v-else class="order-board"><article v-for="order in visibleOrders" :id="`order-${order.id}`" :key="order.id" class="order-card" :class="{ highlighted: String(order.id) === $route.query.order }">
+        <div v-else-if="!error && !visibleOrders.length" class="empty-state"><h2>{{ filter === 'history' ? 'No past orders yet.' : 'Ready for the next order.' }}</h2><p>{{ filter === 'history' ? 'Completed and cancelled orders appear here.' : 'Create an order using the form.' }}</p></div>
+        <div v-else-if="visibleOrders.length" class="order-board"><article v-for="order in visibleOrders" :id="`order-${order.id}`" :key="order.id" class="order-card" :class="{ highlighted: String(order.id) === $route.query.order }">
           <div class="order-card-heading"><div><h3>Order #{{ order.id }}</h3><p>{{ order.table_name || 'Takeaway / no table' }} · {{ order.guests }} {{ order.guests === 1 ? 'guest' : 'guests' }}</p></div><span class="pill" :class="{ neutral: !active(order) }">{{ order.status }}</span></div>
           <small class="muted">{{ date(order.created_at) }}</small><p v-if="order.notes" class="order-notes">{{ order.notes }}</p>
           <ul class="order-summary"><li v-for="item in order.items" :key="item.id"><span>{{ item.quantity }} × {{ item.name }}</span><strong>{{ money(item.unit_price * item.quantity) }}</strong></li></ul>
@@ -57,17 +57,24 @@ export default {
     previewTotal() { return totalCents(this.draft.items, this.menus) / 100; },
     visibleOrders() { return this.orders.filter(order => this.filter === 'all' || (this.filter === 'active' ? isActive(order) : !isActive(order))); },
   },
-  async mounted() {
-    try {
-      this.restaurants = (await http.get('/restaurant?mine=1')).data;
-      this.restaurantId = String(this.restaurants.find(restaurant => String(restaurant.id) === this.$route.query.restaurant)?.id || this.restaurants[0]?.id || '');
-      await this.loadOrders();
-      if (this.tables.some(table => String(table.id) === this.$route.query.table)) this.draft.table_id = this.$route.query.table;
-    } catch (error) { this.error = error.response?.data?.error || 'We couldn’t load your restaurants.'; }
-    finally { this.initializing = false; }
-  },
+  async mounted() { await this.initialize(); },
   beforeUnmount() { this.loadId++; },
   methods: {
+    async initialize() {
+      this.initializing = true; this.error = "";
+      try {
+        this.restaurants = (await http.get('/restaurant?mine=1')).data;
+        this.restaurantId = String(this.restaurants.find(restaurant => String(restaurant.id) === this.$route.query.restaurant)?.id || this.restaurants[0]?.id || '');
+        await this.loadOrders();
+        if (this.tables.some(table => String(table.id) === this.$route.query.table)) this.draft.table_id = this.$route.query.table;
+      } catch (error) { this.error = error.response?.data?.error || 'We couldn’t load your restaurants.'; }
+      finally { this.initializing = false; }
+    },
+    async refresh() {
+      if (this.busy || this.loading || this.initializing) return;
+      if (!this.restaurantId) await this.initialize();
+      else await this.loadOrders();
+    },
     active: isActive,
     money(value) { return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value) || 0); },
     date(value) { return new Date(value).toLocaleString(); },
