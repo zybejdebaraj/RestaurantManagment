@@ -1,14 +1,13 @@
-const fs = require('node:fs');
-const path = require('node:path');
-const { Pool } = require('pg');
-const config = require('./config');
+const { createDatabase } = require('./config/db');
+const { ensureSchema } = require('./utils/ensureSchema');
+const config = require('./config/env');
 const { createApp } = require('./app');
 
 async function start() {
-  const db = new Pool(config.database);
+  const db = createDatabase();
   try {
     await db.query('SELECT 1');
-    await db.query(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'));
+    await ensureSchema(db);
     const app = createApp({ db, jwtSecret: config.jwtSecret, origins: config.origins });
     const server = app.listen(config.port, () => console.log(`Restaurant API running on port ${config.port} (PostgreSQL)`));
     server.on('error', async (error) => {

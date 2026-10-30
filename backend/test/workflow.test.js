@@ -1,17 +1,16 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
-const fs = require('node:fs');
-const path = require('node:path');
+const { ensureSchema } = require('../src/utils/ensureSchema');
 const { Pool } = require('pg');
-const { createApp } = require('../app');
-const config = require('../config');
+const { createApp } = require('../src/app');
+const config = require('../src/config/env');
 
 test('PostgreSQL restaurant and menu workflow', async (t) => {
   assert(['localhost', '127.0.0.1', '::1'].includes(config.database.host), 'Tests require local PostgreSQL');
   assert.equal(config.database.database, 'restaurant_management', 'Tests must use the restaurant database');
   const db = new Pool(config.database);
-  await db.query(fs.readFileSync(path.join(__dirname, '../schema.sql'), 'utf8'));
+  await ensureSchema(db);
   const server = createApp({ db, jwtSecret: config.jwtSecret, origins: config.origins }).listen(0, '127.0.0.1');
   await new Promise((resolve) => server.on('listening', resolve));
   const base = `http://127.0.0.1:${server.address().port}`;

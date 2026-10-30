@@ -4,6 +4,6 @@
 <script>
 import AppIcon from '../shared/AppIcon.vue';
 import { currentUser, clearSession } from '../../services/session';
-const titles = { UserHome: 'Overview', restaurants: 'Restaurants', Add: 'New restaurant', Update: 'Edit restaurant', Menu: 'Menu items', AddMenu: 'New menu item', UpdateMenu: 'Edit menu item' };
+const titles = { UserHome: 'Overview', restaurants: 'Restaurants', Add: 'New restaurant', Update: 'Edit restaurant', Menu: 'Menu items', AddMenu: 'New menu item', UpdateMenu: 'Edit menu item', Tables: 'Tables', Orders: 'Orders' };
 export default { components: { AppIcon }, computed: { title() { return titles[this.$route.name] || 'Overview'; }, initial() { return (currentUser()?.name || 'R').charAt(0).toUpperCase(); } }, methods: { logout() { clearSession(); this.$router.push('/login'); } } };
 </script>

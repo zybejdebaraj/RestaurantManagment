@@ -12,9 +12,13 @@ import Landing from '../views/Landing.vue';
 import RestaurantList from '../views/RestaurantList.vue';
 import RestaurantMenu from '../views/RestaurantMenu.vue';
 import NotFound from '../views/NotFound.vue';
+import Tables from '../views/Tables.vue';
+import Orders from '../views/Orders.vue';
 
 
 const routes = [
+  { path: '/tables', name: 'Tables', component: Tables },
+  { path: '/orders', name: 'Orders', component: Orders },
   {
     path: '/home',
     name: 'UserHome',

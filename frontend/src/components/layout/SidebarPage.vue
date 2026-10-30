@@ -6,6 +6,8 @@
       <router-link to="/home" :class="{ selected: $route.name === 'UserHome' }"><AppIcon name="grid" /> Overview</router-link>
       <router-link to="/restaurants" :class="{ selected: ['restaurants','Add','Update'].includes($route.name) }"><AppIcon name="restaurant" /> Restaurants</router-link>
       <router-link to="/menu" :class="{ selected: ['Menu','AddMenu','UpdateMenu'].includes($route.name) }"><AppIcon name="menu" /> Menu items</router-link>
+      <router-link to="/tables" :class="{ selected: $route.name === 'Tables' }"><AppIcon name="table" /> Tables</router-link>
+      <router-link to="/orders" :class="{ selected: $route.name === 'Orders' }"><AppIcon name="orders" /> Orders</router-link>
       <span class="nav-section-label">QUICK ACTIONS</span>
       <router-link to="/add"><AppIcon name="plus" /> Add a restaurant</router-link>
       <router-link to="/addmenu"><AppIcon name="plus" /> Add a menu item</router-link>

@@ -1,6 +1,6 @@
 const path = require('node:path');
-require('dotenv').config({ path: path.join(__dirname, '.env.local') });
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../../.env.local') });
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 function port(name, fallback) {
   const value = Number(process.env[name] || fallback);

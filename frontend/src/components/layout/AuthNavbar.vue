@@ -1,7 +1,7 @@
 <template>
   <header class="public-header"><nav class="public-nav container" aria-label="Main navigation">
     <router-link to="/" class="wordmark">resto<span>.</span></router-link>
-    <button class="icon-button mobile-menu" aria-label="Toggle navigation" :aria-expanded="open" @click="open = !open"><AppIcon :name="open ? 'close' : 'list'" /></button>
+    <button class="icon-button mobile-menu" aria-label="Toggle navigation" :aria-expanded="open" @click="open = !open"><AppIcon :name="open ? 'close' : 'navigation'" /></button>
     <div class="public-nav-links" :class="{ 'is-open': open }">
       <router-link to="/" exact-active-class="is-active">Home</router-link>
       <router-link to="/view-restaurants-menus" active-class="is-active">Discover restaurants</router-link>
